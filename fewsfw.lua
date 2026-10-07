@@ -1,4 +1,3 @@
-
 -- ==========================================
 -- MUSAED HUB - DEVIL 3D UI v10 (ثيمات جديدة • معرض خلفيات بالصور • حفظ الإعدادات • FPS/Ping)
 -- (نسخة كاملة + DEVIL UI FIX PACK في الآخر)
@@ -4459,7 +4458,6 @@ xpcall(function()
     ScreenGui.DescendantAdded:Connect(function(obj) task.defer(function() Iconify(obj) end) end)
 
     -- Key menu gets explicit icons and centered, fixed-width actions.
-    end
     local function KeyActionIcon(button,id)
         if not button then return end
         AddImageIcon(button,id)
