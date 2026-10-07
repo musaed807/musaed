@@ -1428,8 +1428,8 @@ CreateCard(ScriptsPage, "السكربت الرئيسي", "تشغيل سكربت 
     RunRemoteScript("https://raw.githubusercontent.com/musaed807/codex.lua/refs/heads/main/musaed.lua")
 end)
 
-CreateCard(ScriptsPage, "DevilSight", "تشغيل سكربت DevilSight Plus", "تشغيل", function()
-    RunRemoteScript("https://raw.githubusercontent.com/musaed807/DEVILSG/refs/heads/main/KEY")
+CreateCard(ScriptsPage, "DevilSight Plus", "تشغيل سكربت DevilSight Plus", "تشغيل", function()
+    RunRemoteScript("https://raw.githubusercontent.com/musaed807/DEVILSG/refs/heads/main/NOKEY%2B")
 end)
 
 CreateCard(ScriptsPage, "DevilSight", "تشغيل سكربت DevilSight", "تشغيل", function()
