@@ -1,3 +1,4 @@
+
 -- ==========================================
 -- MUSAED HUB - DEVIL 3D UI v10 (ثيمات جديدة • معرض خلفيات بالصور • حفظ الإعدادات • FPS/Ping)
 -- (نسخة كاملة + DEVIL UI FIX PACK في الآخر)
@@ -4091,80 +4092,101 @@ end,function(err) warn("[MUSAED v11.1] "..tostring(err)) end)
 -- ==========================================================
 xpcall(function()
     local HttpService = game:GetService("HttpService")
+
     local function MaskRecent(value)
-        value=tostring(value or "")
-        if #value<=3 then return value end
-        return value:sub(1,3)..string.rep("•",#value-3)
-    end
-        if type(isfile)=="function" and type(readfile)=="function" then
-            pcall(function()
-                end
-            end)
+        value = tostring(value or "")
+        if #value <= 3 then
+            return value
         end
+        return value:sub(1,3) .. string.rep("•", #value - 3)
     end
+
+    -- Recent-key storage. This block is intentionally self-contained so
+    -- missing executor file APIs cannot break the main menu.
+    local RecentKeys = {}
+    local RecentFile = "MusaedHub_RecentKeys.json"
+
+    local function SaveRecentKeys()
+        if type(writefile) ~= "function" then
+            return
+        end
+        pcall(function()
+            writefile(RecentFile, HttpService:JSONEncode(RecentKeys))
+        end)
     end
+
+    local function LoadRecentKeys()
+        if type(isfile) ~= "function" or type(readfile) ~= "function" then
+            return
+        end
+        pcall(function()
+            if isfile(RecentFile) then
+                local data = HttpService:JSONDecode(readfile(RecentFile))
+                if type(data) == "table" then
+                    RecentKeys = data
+                end
+            end
+        end)
+    end
+
     local function AddRecentKey(key)
-        key=tostring(key or ""):upper():gsub("^%s+",""):gsub("%s+$","")
-        if key=="" then return end
-    end
+        key = tostring(key or ""):upper():gsub("^%s+", ""):gsub("%s+$", "")
+        if key == "" then
+            return
+        end
 
-    local KeyDisplay=Instance.new("TextLabel")
-    KeyDisplay.Name="MaskedKeyInput"
-    KeyDisplay.BackgroundTransparency=1
-    KeyDisplay.TextColor3=Color3.fromRGB(245,248,255)
-    KeyDisplay.TextSize=12
-    KeyDisplay.Font=Enum.Font.GothamMedium
-    KeyDisplay.TextXAlignment=Enum.TextXAlignment.Left
-    local kdpad=Instance.new("UIPadding") kdpad.PaddingLeft=UDim.new(0,12) kdpad.PaddingRight=UDim.new(0,12) kdpad.Parent=KeyDisplay
-    local function RefreshMaskedKey()
-        KeyDisplay.Text=raw=="" and "" or MaskRecent(raw)
-    end
-
-    -- Recent key strip inside the key window.
-    local RecentTitle=Instance.new("TextLabel")
-    RecentTitle.Size=UDim2.new(1,-40,0,18)
-    RecentTitle.Position=UDim2.new(0,20,0,224)
-    RecentTitle.BackgroundTransparency=1
-    RecentTitle.Text="آخر الكيات المستخدمة"
-    RecentTitle.TextColor3=Color3.fromRGB(150,165,185)
-    RecentTitle.TextSize=10
-    RecentTitle.Font=Enum.Font.GothamBold
-    RecentTitle.TextXAlignment=Enum.TextXAlignment.Left
-    local RecentStrip=Instance.new("ScrollingFrame")
-    RecentStrip.Size=UDim2.new(1,-40,0,42)
-    RecentStrip.Position=UDim2.new(0,20,0,244)
-    RecentStrip.BackgroundTransparency=1
-    RecentStrip.BorderSizePixel=0
-    RecentStrip.ScrollBarThickness=0
-    RecentStrip.ScrollingDirection=Enum.ScrollingDirection.X
-    RecentStrip.AutomaticCanvasSize=Enum.AutomaticSize.X
-    local RecentLayout=Instance.new("UIListLayout") RecentLayout.FillDirection=Enum.FillDirection.Horizontal RecentLayout.Padding=UDim.new(0,6) RecentLayout.Parent=RecentStrip
-    local function RefreshRecentStrip()
-        for _,child in ipairs(RecentStrip:GetChildren()) do if child:IsA("TextButton") then child:Destroy() end end
-            local empty=Instance.new("TextLabel") empty.Size=UDim2.new(0,220,0,32) empty.BackgroundTransparency=1 empty.Text="لا توجد كيات محفوظة بعد" empty.TextColor3=Color3.fromRGB(110,125,145) empty.TextSize=10 empty.Font=Enum.Font.GothamMedium empty.Parent=RecentStrip
-        else
-                local b=Instance.new("TextButton") b.Size=UDim2.new(0,112,0,32) b.BackgroundColor3=Color3.fromRGB(18,27,41) b.BorderSizePixel=0 b.AutoButtonColor=false b.Text=MaskRecent(key) b.TextColor3=CurrentAccent b.TextSize=10 b.Font=Enum.Font.GothamBold b.Parent=RecentStrip
-                local c=Instance.new("UICorner") c.CornerRadius=UDim.new(0,7) c.Parent=b
-                local s=Instance.new("UIStroke") s.Color=CurrentAccent s.Transparency=.45 s.Parent=b
+        for i = #RecentKeys, 1, -1 do
+            if tostring(RecentKeys[i]) == key then
+                table.remove(RecentKeys, i)
             end
         end
+
+        table.insert(RecentKeys, 1, key)
+        while #RecentKeys > 5 do
+            table.remove(RecentKeys)
+        end
+        SaveRecentKeys()
     end
-    RefreshRecentStrip()
-        task.defer(function()
-            local vaultOn=not (_G.MUSAED_V12 and _G.MUSAED_V12.State and _G.MUSAED_V12.State.KeySaving==false)
-            if ValidKeys[raw] and vaultOn then AddRecentKey(raw) RefreshRecentStrip() end
-        end)
-    end)
-    -- Modern key-menu polish: status accent, compact helper and clear button.
+
+    LoadRecentKeys()
 
     -- Main menu visual polish: layered top glow and a small live-status marker.
-    local PolishGlow=Instance.new("Frame") PolishGlow.Name="V11HeaderGlow" PolishGlow.Size=UDim2.new(1,-26,0,3) PolishGlow.Position=UDim2.new(0,13,0,52) PolishGlow.BackgroundColor3=CurrentAccent PolishGlow.BackgroundTransparency=.12 PolishGlow.BorderSizePixel=0 PolishGlow.ZIndex=9 PolishGlow.Parent=MainFrame
-    local pg=Instance.new("UIGradient") pg.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.5,0),NumberSequenceKeypoint.new(1,1)}) pg.Parent=PolishGlow
-    RegisterThemeElement(PolishGlow,"BackgroundColored")
-    local MenuVersion=Instance.new("TextLabel") MenuVersion.Size=UDim2.new(0,70,0,18) MenuVersion.Position=UDim2.new(1,-92,0,12) MenuVersion.BackgroundTransparency=1 MenuVersion.Text="V11 • READY" MenuVersion.TextColor3=CurrentAccent MenuVersion.TextSize=9 MenuVersion.Font=Enum.Font.GothamBold MenuVersion.TextXAlignment=Enum.TextXAlignment.Right MenuVersion.Parent=Header
-    RegisterThemeElement(MenuVersion,"TextColored")
-end,function(err) warn("[MUSAED KEY VAULT] "..tostring(err)) end)
+    if MainFrame and MainFrame.Parent and Header and Header.Parent then
+        local PolishGlow = Instance.new("Frame")
+        PolishGlow.Name = "V11HeaderGlow"
+        PolishGlow.Size = UDim2.new(1, -26, 0, 3)
+        PolishGlow.Position = UDim2.new(0, 13, 0, 52)
+        PolishGlow.BackgroundColor3 = CurrentAccent
+        PolishGlow.BackgroundTransparency = 0.12
+        PolishGlow.BorderSizePixel = 0
+        PolishGlow.ZIndex = 9
+        PolishGlow.Parent = MainFrame
 
+        local pg = Instance.new("UIGradient")
+        pg.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 1),
+            NumberSequenceKeypoint.new(0.5, 0),
+            NumberSequenceKeypoint.new(1, 1)
+        })
+        pg.Parent = PolishGlow
+
+        RegisterThemeElement(PolishGlow, "BackgroundColored")
+
+        local MenuVersion = Instance.new("TextLabel")
+        MenuVersion.Size = UDim2.new(0, 90, 0, 18)
+        MenuVersion.Position = UDim2.new(1, -112, 0, 12)
+        MenuVersion.BackgroundTransparency = 1
+        MenuVersion.Text = "V11 • READY"
+        MenuVersion.TextColor3 = CurrentAccent
+        MenuVersion.TextSize = 9
+        MenuVersion.Font = Enum.Font.GothamBold
+        MenuVersion.TextXAlignment = Enum.TextXAlignment.Right
+        MenuVersion.Parent = Header
+        RegisterThemeElement(MenuVersion, "TextColored")
+    end
+end, function(err)
+    warn("[MUSAED KEY VAULT] " .. tostring(err))
+end)
 
 -- ==========================================================
 -- MUSAED HUB v12 ULTIMATE CONTROL CENTER
