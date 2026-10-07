@@ -4396,86 +4396,128 @@ xpcall(function()
     if Notify then Notify("V13 DESIGN: واجهة موحدة • مقاسات محسنة • رموز ثابتة",CurrentAccent) end
 end,function(err) warn("[MUSAED v13 DESIGN] "..tostring(err)) end)
 
-
 -- ==========================================================
 -- MUSAED HUB v14 ICON LAYER
--- Stable Roblox image icons (Lucide-style fallback mapping)
+-- Safe standalone icon layer
 -- ==========================================================
-xpcall(function()
-    -- These are stable image assets used as a device-independent icon layer.
-    -- If an asset is unavailable, the button keeps its text label as fallback.
-    local Icons={
-        home="6031225810", search="6031280882", settings="6031289458", star="6031075938",
-        menu="6031094678", user="6031075938", key="6031289458", play="6031094678",
-        tools="6031289458", theme="6031075938", image="6031225810", players="6031075938",
-        teleport="6031225810", shield="6031289458", close="6031094678", dashboard="6031225810",
-        panic="6031094678", notes="6031280882", timer="6031075938", profile="6031075938"
-    }
-    local function IconFor(text)
-        text=tostring(text or ""):lower()
-        if text:find("home") or text:find("رئيس") then return Icons.home end
-        if text:find("search") or text:find("بحث") then return Icons.search end
-        if text:find("set") or text:find("إعداد") or text:find("gear") then return Icons.settings end
-        if text:find("theme") or text:find("ثيم") then return Icons.theme end
-        if text:find("bg") or text:find("خلف") then return Icons.image end
-        if text:find("script") or text:find("سكربت") then return Icons.tools end
-        if text:find("tool") or text:find("devil") or text:find("تعد") then return Icons.tools end
-        if text:find("player") or text:find("لاعب") or text:find("esp") then return Icons.players end
-        if text:find("teleport") or text:find("انتقال") then return Icons.teleport end
-        if text:find("profile") or text:find("بروف") then return Icons.profile end
-        if text:find("panic") then return Icons.panic end
-        if text:find("note") or text:find("ملاحظ") then return Icons.notes end
-        if text:find("timer") or text:find("مؤقت") then return Icons.timer end
-        if text:find("key") or text:find("مفتاح") or text:find("activate") then return Icons.key end
-        if text:find("star") or text=="★" then return Icons.star end
-        return nil
-    end
-    local function AddImageIcon(button,id)
-        if not button or not button:IsA("GuiButton") or not id or button:GetAttribute("V14Icon") then return end
-        button:SetAttribute("V14Icon",true)
-        local icon=Instance.new("ImageLabel")
-        icon.Name="V14Icon"
-        icon.Size=UDim2.fromOffset(17,17)
-        icon.Position=UDim2.new(0,9,.5,-8)
-        icon.BackgroundTransparency=1
-        icon.Image="rbxassetid://"..id
-        icon.ImageColor3=CurrentAccent
-        icon.ScaleType=Enum.ScaleType.Fit
-        icon.ZIndex=button.ZIndex+1
-        icon.Parent=button
-        local pad=button:FindFirstChild("V14IconPadding") or Instance.new("UIPadding")
-        pad.Name="V14IconPadding" pad.PaddingLeft=UDim.new(0,30) pad.PaddingRight=UDim.new(0,8) pad.Parent=button
-        button.TextXAlignment=Enum.TextXAlignment.Left
-        local st=icon:GetPropertyChangedSignal("IsLoaded"):Connect(function() if not icon.IsLoaded then icon.Visible=false end end)
-        task.delay(2,function() if icon and icon.Parent and not icon.IsLoaded then icon.Visible=false end end)
-    end
-    local function Iconify(obj)
-        if not obj:IsA("GuiButton") then return end
-        local id=IconFor(obj.Text)
-        if id then AddImageIcon(obj,id) end
-    end
-    for _,obj in ipairs(ScreenGui:GetDescendants()) do Iconify(obj) end
-    ScreenGui.DescendantAdded:Connect(function(obj) task.defer(function() Iconify(obj) end) end)
+do
+    local ok, err = xpcall(function()
+        local Icons = {
+            home = "6031225810",
+            search = "6031280882",
+            settings = "6031289458",
+            star = "6031075938",
+            key = "6031289458",
+            tools = "6031289458",
+            image = "6031225810",
+            players = "6031075938",
+            teleport = "6031225810",
+            panic = "6031094678",
+            notes = "6031280882",
+            timer = "6031075938",
+            profile = "6031075938",
+            dashboard = "6031225810"
+        }
 
-    -- Key menu gets explicit icons and centered, fixed-width actions.
-    local function KeyActionIcon(button,id)
-        if not button then return end
-        AddImageIcon(button,id)
-        button.TextXAlignment=Enum.TextXAlignment.Center
-        local p=button:FindFirstChild("V14IconPadding") if p then p.PaddingLeft=UDim.new(0,28) p.PaddingRight=UDim.new(0,8) end
-    end
-    -- Main menu title also receives a real dashboard icon.
-    if Title and not Title:FindFirstChild("V14TitleIcon") then
-        local ti=Instance.new("ImageLabel") ti.Name="V14TitleIcon" ti.Size=UDim2.fromOffset(18,18) ti.Position=UDim2.new(0,0,.5,-9) ti.BackgroundTransparency=1 ti.Image="rbxassetid://"..Icons.dashboard ti.ImageColor3=CurrentAccent ti.Parent=Title
-        local tp=Instance.new("UIPadding") tp.PaddingLeft=UDim.new(0,26) tp.Parent=Title
-    end
-    -- Restore the intended dimensions whenever the main menu is opened.
-    local function NormalizeMain()
-        if MainFrame and MainFrame.Visible then
-            if MainFrame.Size.X.Offset<880 or MainFrame.Size.Y.Offset<570 then MainFrame.Size=UDim2.fromOffset(900,590) end
-            MainFrame.Position=UDim2.new(.5,-450,.5,-295)
+        local function IconFor(value)
+            local text = tostring(value or ""):lower()
+            if text:find("home", 1, true) or text:find("رئيس", 1, true) then return Icons.home end
+            if text:find("search", 1, true) or text:find("بحث", 1, true) then return Icons.search end
+            if text:find("set", 1, true) or text:find("إعداد", 1, true) or text:find("gear", 1, true) then return Icons.settings end
+            if text:find("theme", 1, true) or text:find("ثيم", 1, true) then return Icons.star end
+            if text:find("bg", 1, true) or text:find("خلف", 1, true) then return Icons.image end
+            if text:find("script", 1, true) or text:find("سكربت", 1, true) then return Icons.tools end
+            if text:find("tool", 1, true) or text:find("devil", 1, true) or text:find("تعد", 1, true) then return Icons.tools end
+            if text:find("player", 1, true) or text:find("لاعب", 1, true) or text:find("esp", 1, true) then return Icons.players end
+            if text:find("teleport", 1, true) or text:find("انتقال", 1, true) then return Icons.teleport end
+            if text:find("profile", 1, true) or text:find("بروف", 1, true) then return Icons.profile end
+            if text:find("panic", 1, true) then return Icons.panic end
+            if text:find("note", 1, true) or text:find("ملاحظ", 1, true) then return Icons.notes end
+            if text:find("timer", 1, true) or text:find("مؤقت", 1, true) then return Icons.timer end
+            if text:find("key", 1, true) or text:find("مفتاح", 1, true) or text:find("activate", 1, true) then return Icons.key end
+            if text == "★" then return Icons.star end
+            return nil
         end
-    end
-    if ToggleBtn then ToggleBtn.MouseButton1Click:Connect(function() task.defer(NormalizeMain) end) end
-    if Notify then Notify("V14 ICONS: أيقونات مصورة ثابتة • مقاسات key/menu متناسقة",CurrentAccent) end
-end,function(err) warn("[MUSAED v14 ICONS] "..tostring(err)) end)
+
+        local function AddImageIcon(button, id)
+            if not button or not button:IsA("GuiButton") or not id then return end
+            if button:GetAttribute("V14Icon") then return end
+            button:SetAttribute("V14Icon", true)
+
+            local icon = Instance.new("ImageLabel")
+            icon.Name = "V14Icon"
+            icon.Size = UDim2.fromOffset(17, 17)
+            icon.Position = UDim2.new(0, 9, 0.5, -8)
+            icon.BackgroundTransparency = 1
+            icon.Image = "rbxassetid://" .. id
+            icon.ImageColor3 = CurrentAccent
+            icon.ScaleType = Enum.ScaleType.Fit
+            icon.ZIndex = button.ZIndex + 1
+            icon.Parent = button
+
+            local pad = button:FindFirstChild("V14IconPadding")
+            if not pad then
+                pad = Instance.new("UIPadding")
+                pad.Name = "V14IconPadding"
+                pad.Parent = button
+            end
+            pad.PaddingLeft = UDim.new(0, 30)
+            pad.PaddingRight = UDim.new(0, 8)
+            button.TextXAlignment = Enum.TextXAlignment.Left
+        end
+
+        local function Iconify(obj)
+            if not obj or not obj:IsA("GuiButton") then return end
+            local id = IconFor(obj.Text)
+            if id then
+                AddImageIcon(obj, id)
+            end
+        end
+
+        if ScreenGui then
+            for _, obj in ipairs(ScreenGui:GetDescendants()) do
+                Iconify(obj)
+            end
+            ScreenGui.DescendantAdded:Connect(function(obj)
+                task.defer(function()
+                    Iconify(obj)
+                end)
+            end)
+        end
+
+        if Title and not Title:FindFirstChild("V14TitleIcon") then
+            local titleIcon = Instance.new("ImageLabel")
+            titleIcon.Name = "V14TitleIcon"
+            titleIcon.Size = UDim2.fromOffset(18, 18)
+            titleIcon.Position = UDim2.new(0, 0, 0.5, -9)
+            titleIcon.BackgroundTransparency = 1
+            titleIcon.Image = "rbxassetid://" .. Icons.dashboard
+            titleIcon.ImageColor3 = CurrentAccent
+            titleIcon.Parent = Title
+
+            local titlePad = Instance.new("UIPadding")
+            titlePad.PaddingLeft = UDim.new(0, 26)
+            titlePad.Parent = Title
+        end
+
+        local function NormalizeMain()
+            if not MainFrame or not MainFrame.Visible then return end
+            if MainFrame.Size.X.Offset < 880 or MainFrame.Size.Y.Offset < 570 then
+                MainFrame.Size = UDim2.fromOffset(900, 590)
+            end
+            MainFrame.Position = UDim2.new(0.5, -450, 0.5, -295)
+        end
+
+        if ToggleBtn then
+            ToggleBtn.MouseButton1Click:Connect(function()
+                task.defer(NormalizeMain)
+            end)
+        end
+
+        if Notify then
+            Notify("V14 ICONS: تم تفعيل طبقة الأيقونات", CurrentAccent)
+        end
+    end, function(message)
+        warn("[MUSAED v14 ICONS] " .. tostring(message))
+    end)
+end
