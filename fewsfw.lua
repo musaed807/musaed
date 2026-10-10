@@ -1,5 +1,5 @@
 -- ==========================================
--- MUSAED HUB - DEVIL 3D UI v10 (ثيمات جديدة • معرض خلفيات بالصور • حفظ الإعدادات • FPS/Ping)
+-- DEVIL HUB - DEVIL 3D UI v10 (ثيمات جديدة • معرض خلفيات بالصور • حفظ الإعدادات • FPS/Ping)
 -- (نسخة كاملة + DEVIL UI FIX PACK في الآخر)
 -- ==========================================
 local CoreGui = game:GetService("CoreGui")
@@ -1257,7 +1257,7 @@ local function CreateCard(parentPage, titleText, descText, btnText, callback)
 end
 
 -- Dashboard cards
-CreateCard(HomePage, "مرحباً، " .. LocalPlayer.DisplayName, "MUSAED HUB جاهز للعمل • " .. HUB_VERSION, "فتح", function()
+CreateCard(HomePage, "مرحباً، " .. LocalPlayer.DisplayName, "DEVIL HUB جاهز للعمل • " .. HUB_VERSION, "فتح", function()
     Notify("ℹ لوحة التحكم جاهزة", CurrentAccent)
 end)
 CreateCard(HomePage, "حالة النظام", "الاتصال: ONLINE • اللاعب: " .. LocalPlayer.Name, "تحديث", function()
@@ -3789,7 +3789,7 @@ end)
 
 
 -- ==========================================================
--- MUSAED HUB v11 FEATURE PACK
+-- DEVIL HUB v11 FEATURE PACK
 -- Profiles • Onboarding • Command Palette • Tooltips • Focus
 -- Player Monitor • Waypoints • Console • Notes • Timers
 -- Panic • Compact • Resize • Particles • Auto Theme • Glass
@@ -4004,7 +4004,7 @@ xpcall(function()
 
     -- onboarding, first open only
     local Intro=MakeWindow("V11Intro","جولة تعريفية",UDim2.new(0,430,0,250)) Intro.Position=UDim2.new(.5,-215,.5,-125)
-    local IntroText=Label(Intro,"مرحباً بك في MUSAED HUB\n\n1) التابات للتنقل بين الأدوات.\n2) Ctrl+K يفتح Command Palette.\n3) عداد الهيدر يعرض الميزات الشغالة.\n4) F8 يوقف كل شيء فوراً.\n5) استخدم Profiles لحفظ إعداداتك.",12,UDim2.new(0,18,0,52)) IntroText.Size=UDim2.new(1,-36,0,140) IntroText.TextWrapped=true
+    local IntroText=Label(Intro,"مرحباً بك في DEVIL HUB\n\n1) التابات للتنقل بين الأدوات.\n2) Ctrl+K يفتح Command Palette.\n3) عداد الهيدر يعرض الميزات الشغالة.\n4) F8 يوقف كل شيء فوراً.\n5) استخدم Profiles لحفظ إعداداتك.",12,UDim2.new(0,18,0,52)) IntroText.Size=UDim2.new(1,-36,0,140) IntroText.TextWrapped=true
     Button(Intro,"ابدأ",UDim2.new(.5,-55,1,-48),UDim2.new(0,110,0,32),function() Intro.Visible=false if type(writefile)=="function" then pcall(writefile,"MusaedHub_Onboarded.txt","1") end end)
     local onboarded=false if type(isfile)=="function" then pcall(function() onboarded=isfile("MusaedHub_Onboarded.txt") end) end if not onboarded then Intro.Visible=true end
 
@@ -4188,7 +4188,7 @@ end, function(err)
 end)
 
 -- ==========================================================
--- MUSAED HUB v12 ULTIMATE CONTROL CENTER
+-- DEVIL HUB v12 ULTIMATE CONTROL CENTER
 -- Dashboard • Widgets • Profiles Pro • Presets • Backup • Hotkeys
 -- Notification Center • Performance Modes • Lock Layout • Focus Pro
 -- ==========================================================
@@ -4326,7 +4326,7 @@ end,function(err) warn("[MUSAED COMMAND BRIDGE] "..tostring(err)) end)
 
 
 -- ==========================================================
--- MUSAED HUB v13 DESIGN SYSTEM
+-- DEVIL HUB v13 DESIGN SYSTEM
 -- Unified sizing • clean icon labels • responsive key menu • spacing polish
 -- ==========================================================
 xpcall(function()
@@ -4395,3 +4395,1031 @@ xpcall(function()
     end)
     if Notify then Notify("V13 DESIGN: واجهة موحدة • مقاسات محسنة • رموز ثابتة",CurrentAccent) end
 end,function(err) warn("[MUSAED v13 DESIGN] "..tostring(err)) end)
+
+
+-- ==========================================================
+-- DEVIL HUB v14 • REAL UI REWORK
+-- Sidebar • Unified pages • Quick search • Theme save • Section visibility
+-- ==========================================================
+xpcall(function()
+    local HttpService = game:GetService("HttpService")
+    local PREFS_FILE = "MusaedHub_DesignPrefs.json"
+    local function SafeCall(fn, ...)
+        local ok, result = pcall(fn, ...)
+        return ok, result
+    end
+    local function RoundUI(obj, radius)
+        if obj and obj:IsA("GuiObject") and not obj:FindFirstChild("V14Corner") then
+            local corner = Instance.new("UICorner")
+            corner.Name = "V14Corner"
+            corner.CornerRadius = UDim.new(0, radius or 9)
+            corner.Parent = obj
+        end
+    end
+    local function AccentStroke(obj, transparency)
+        if not obj or not obj:IsA("GuiObject") then return end
+        local stroke = obj:FindFirstChild("V14Stroke")
+        if not stroke then
+            stroke = Instance.new("UIStroke")
+            stroke.Name = "V14Stroke"
+            stroke.Parent = obj
+        end
+        stroke.Color = CurrentAccent
+        stroke.Thickness = 1
+        stroke.Transparency = transparency or 0.5
+    end
+
+    -- 1) Replace the horizontal tab strip with a true vertical sidebar.
+    local tabBar = MainFrame:FindFirstChild("DEVIL_TabBar")
+    if tabBar then
+        tabBar.Position = UDim2.new(0, 14, 0, 72)
+        tabBar.Size = UDim2.new(0, 166, 1, -92)
+        tabBar.ScrollingDirection = Enum.ScrollingDirection.Y
+        tabBar.AutomaticCanvasSize = Enum.AutomaticSize.Y
+        tabBar.CanvasSize = UDim2.new(0, 0, 0, 0)
+        tabBar.ScrollBarThickness = 2
+        tabBar.ScrollBarImageColor3 = CurrentAccent
+        tabBar.BackgroundColor3 = Color3.fromRGB(8, 19, 33)
+        tabBar.BackgroundTransparency = 0.18
+        tabBar.BorderSizePixel = 0
+        RoundUI(tabBar, 13)
+        AccentStroke(tabBar, 0.62)
+        if SidebarList then
+            SidebarList.FillDirection = Enum.FillDirection.Vertical
+            SidebarList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            SidebarList.VerticalAlignment = Enum.VerticalAlignment.Top
+            SidebarList.SortOrder = Enum.SortOrder.LayoutOrder
+            SidebarList.Padding = UDim.new(0, 7)
+        end
+        local padding = tabBar:FindFirstChildOfClass("UIPadding")
+        if padding then
+            padding.PaddingLeft = UDim.new(0, 8)
+            padding.PaddingRight = UDim.new(0, 8)
+            padding.PaddingTop = UDim.new(0, 10)
+            padding.PaddingBottom = UDim.new(0, 10)
+        end
+    end
+    Sidebar.Visible = false -- old horizontal container is unused; tabBar owns the tabs now.
+
+    -- Combine background controls with themes instead of keeping a duplicate destination.
+    if BackgroundPage and ThemePage and BackgroundPage.Parent and ThemePage.Parent then
+        local backgroundWrapper = ThemePage:FindFirstChild("V14BackgroundSection")
+        if not backgroundWrapper then
+            backgroundWrapper = Instance.new("Frame")
+            backgroundWrapper.Name = "V14BackgroundSection"
+            backgroundWrapper.Size = UDim2.new(1, -6, 0, 0)
+            backgroundWrapper.AutomaticSize = Enum.AutomaticSize.Y
+            backgroundWrapper.BackgroundTransparency = 1
+            backgroundWrapper.BorderSizePixel = 0
+            backgroundWrapper.LayoutOrder = 500
+            backgroundWrapper.Parent = ThemePage
+        end
+        for _, child in ipairs(BackgroundPage:GetChildren()) do
+            child.Parent = backgroundWrapper
+        end
+        BackgroundPage.Visible = false
+        if Tab4 then Tab4.Visible = false; Tab4:Destroy() end
+        for i = #Tabs, 1, -1 do
+            if Tabs[i] == Tab4 then table.remove(Tabs, i) end
+        end
+        for i = #Pages, 1, -1 do
+            if Pages[i] == BackgroundPage then table.remove(Pages, i) end
+        end
+    end
+
+    local labels = {
+        [TabHome] = "⌂  الرئيسية",
+        [TabFav] = "★  المفضلة",
+        [Tab1] = "▤  السكربتات",
+        [Tab2] = "⚙  التعديلات",
+        [Tab3] = "◈  المظهر",
+        [Tab5] = "☰  الإعدادات",
+    }
+    for index, tab in ipairs(Tabs) do
+        tab.Visible = true
+        tab.LayoutOrder = index
+        tab.Size = UDim2.new(1, -4, 0, 39)
+        tab.AutomaticSize = Enum.AutomaticSize.None
+        tab.TextXAlignment = Enum.TextXAlignment.Left
+        tab.TextSize = 11
+        tab.Font = Enum.Font.GothamSemibold
+        tab.Text = labels[tab] or tab.Text
+        tab.BackgroundColor3 = Color3.fromRGB(14, 29, 47)
+        tab.BackgroundTransparency = 0.18
+        tab.TextColor3 = Color3.fromRGB(172, 194, 220)
+        RoundUI(tab, 9)
+        AccentStroke(tab, 0.82)
+        local pad = tab:FindFirstChildOfClass("UIPadding")
+        if not pad then pad = Instance.new("UIPadding"); pad.Parent = tab end
+        pad.PaddingLeft = UDim.new(0, 12)
+        pad.PaddingRight = UDim.new(0, 6)
+        local depth = tab:FindFirstChild("DEVIL_TabDepth")
+        if depth then depth.Visible = false end
+        local glow = tab:FindFirstChild("DEVIL_TabGlow")
+        if glow then glow.Size = UDim2.new(0, 3, 1, -12); glow.Position = UDim2.new(0, 3, 0, 6) end
+    end
+
+    -- Hide the old horizontal arrows and bottom navigation, which no longer fit this layout.
+    for _, obj in ipairs(MainFrame:GetDescendants()) do
+        if obj:IsA("TextButton") and (obj.Text == "‹" or obj.Text == "›") then
+            obj.Visible = false
+        end
+    end
+    local oldNav = MainFrame:FindFirstChild("DEVIL_NavBar")
+    if oldNav then oldNav.Visible = false end
+    for _, obj in ipairs(MainFrame:GetChildren()) do
+        if obj:IsA("TextButton") and (obj.Text == "‹" or obj.Text == "›") then obj.Visible = false end
+    end
+
+    -- Give the content its own right-hand canvas with balanced spacing.
+    PageContainer.Position = UDim2.new(0, 192, 0, 72)
+    PageContainer.Size = UDim2.new(1, -206, 1, -92)
+    PageContainer.ClipsDescendants = true
+    for _, page in ipairs(Pages) do
+        page.Position = UDim2.new(0, 0, 0, 0)
+        page.Size = UDim2.new(1, 0, 1, 0)
+        page.ScrollBarThickness = 3
+        page.ScrollBarImageColor3 = CurrentAccent
+        page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+        page.CanvasSize = UDim2.new(0, 0, 0, 0)
+        page.BackgroundTransparency = 1
+    end
+
+    -- Reflow the header so search and buttons do not collide.
+    Header.Size = UDim2.new(1, 0, 0, 58)
+    Title.Position = UDim2.new(0, 18, 0, 0)
+    Title.Size = UDim2.new(0, 205, 1, 0)
+    Title.Text = "DEVIL HUB  •  " .. HUB_VERSION
+    Title.TextSize = 14
+    StatusPill.Position = UDim2.new(0, 220, 0.5, -11)
+    StatusPill.Size = UDim2.fromOffset(74, 22)
+    if SearchBox then
+        SearchBox.Position = UDim2.new(1, -254, 0.5, -16)
+        SearchBox.Size = UDim2.fromOffset(174, 32)
+        SearchBox.PlaceholderText = "بحث سريع...  Ctrl+F"
+        RoundUI(SearchBox, 9)
+        AccentStroke(SearchBox, 0.65)
+    end
+    if NotificationBell then
+        NotificationBell.Position = UDim2.new(1, -72, 0.5, -16)
+        NotificationBell.Size = UDim2.fromOffset(32, 32)
+    end
+    if CloseBtn then
+        CloseBtn.Position = UDim2.new(1, -34, 0.5, -16)
+        CloseBtn.Size = UDim2.fromOffset(28, 32)
+        CloseBtn.Text = "×"
+    end
+    -- Place notifications just before search on wide screens; compact mode keeps search usable.
+    if NotificationBell then NotificationBell.Position = UDim2.new(1, -292, 0.5, -16) end
+    if SearchBox then SearchBox.Position = UDim2.new(1, -250, 0.5, -16); SearchBox.Size = UDim2.fromOffset(172, 32) end
+    if HeaderLine then HeaderLine.Position = UDim2.new(0, 14, 0, 58); HeaderLine.Size = UDim2.new(1, -28, 0, 1) end
+    if ProfileFrame then ProfileFrame.Visible = false end
+
+    -- Favorites empty state; the original star buttons continue moving cards into this page.
+    local emptyFavorites = FavoritesPage:FindFirstChild("V14EmptyFavorites")
+    if not emptyFavorites then
+        emptyFavorites = Instance.new("TextLabel")
+        emptyFavorites.Name = "V14EmptyFavorites"
+        emptyFavorites.Size = UDim2.new(1, -24, 0, 70)
+        emptyFavorites.Position = UDim2.new(0, 12, 0, 12)
+        emptyFavorites.BackgroundColor3 = Color3.fromRGB(13, 28, 46)
+        emptyFavorites.BackgroundTransparency = 0.12
+        emptyFavorites.BorderSizePixel = 0
+        emptyFavorites.Text = "ما عندك ميزات بالمفضلة للحين\nاضغط ★ على أي بطاقة لإضافتها هنا"
+        emptyFavorites.TextColor3 = Color3.fromRGB(160, 185, 215)
+        emptyFavorites.TextSize = 12
+        emptyFavorites.Font = Enum.Font.GothamMedium
+        emptyFavorites.TextWrapped = true
+        emptyFavorites.LayoutOrder = -100
+        emptyFavorites.Parent = FavoritesPage
+        RoundUI(emptyFavorites, 11)
+    end
+    local function RefreshFavoritesEmpty()
+        local hasCard = false
+        for _, child in ipairs(FavoritesPage:GetChildren()) do
+            if child:IsA("Frame") and child ~= emptyFavorites then hasCard = true; break end
+        end
+        emptyFavorites.Visible = not hasCard
+    end
+    FavoritesPage.ChildAdded:Connect(RefreshFavoritesEmpty)
+    FavoritesPage.ChildRemoved:Connect(RefreshFavoritesEmpty)
+    RefreshFavoritesEmpty()
+
+    -- Persist and restore the actual accent/background choices when file APIs are available.
+    local function SaveDesignPrefs()
+        if type(writefile) ~= "function" then
+            if Notify then Notify("الحفظ يحتاج دعم writefile من بيئتك", Color3.fromRGB(245, 190, 90)) end
+            return false
+        end
+        local data = {
+            r = math.floor(CurrentAccent.R * 255 + 0.5),
+            g = math.floor(CurrentAccent.G * 255 + 0.5),
+            b = math.floor(CurrentAccent.B * 255 + 0.5),
+            background = SelectedBackground,
+            sound = SoundEnabled,
+            animations = AnimationEnabled,
+            backgroundMotion = BackgroundMotionEnabled,
+        }
+        local ok, encoded = pcall(function() return HttpService:JSONEncode(data) end)
+        if not ok then return false end
+        local wrote = pcall(writefile, PREFS_FILE, encoded)
+        if wrote and Notify then Notify("تم حفظ الثيم والإعدادات", CurrentAccent) end
+        return wrote
+    end
+    if type(isfile) == "function" and type(readfile) == "function" then
+        pcall(function()
+            if isfile(PREFS_FILE) then
+                local data = HttpService:JSONDecode(readfile(PREFS_FILE))
+                if type(data) == "table" then
+                    if type(data.r) == "number" and type(data.g) == "number" and type(data.b) == "number" then
+                        UpdateTheme(Color3.fromRGB(math.clamp(data.r, 0, 255), math.clamp(data.g, 0, 255), math.clamp(data.b, 0, 255)))
+                    end
+                    if type(data.background) == "number" and Backgrounds[data.background] then ApplySelectedBackground(data.background) end
+                    if type(data.sound) == "boolean" then SoundEnabled = data.sound end
+                    if type(data.animations) == "boolean" then AnimationEnabled = data.animations end
+                    if type(data.backgroundMotion) == "boolean" then BackgroundMotionEnabled = data.backgroundMotion end
+                end
+            end
+        end)
+    end
+    CreateCard(SettingsPage, "حفظ الثيم", "حفظ اللون والخلفية والصوت والحركة واستعادتها لاحقاً", "حفظ", function()
+        SaveDesignPrefs()
+    end)
+
+    -- Section visibility controls. Settings stays available so hidden sections can always be restored.
+    local sectionPanel = Instance.new("Frame")
+    sectionPanel.Name = "V14SectionVisibility"
+    sectionPanel.Size = UDim2.new(1, -8, 0, 142)
+    sectionPanel.BackgroundColor3 = Color3.fromRGB(10, 24, 40)
+    sectionPanel.BackgroundTransparency = 0.1
+    sectionPanel.BorderSizePixel = 0
+    sectionPanel.LayoutOrder = 999
+    sectionPanel.Parent = SettingsPage
+    RoundUI(sectionPanel, 11)
+    AccentStroke(sectionPanel, 0.65)
+    local sectionTitle = Instance.new("TextLabel")
+    sectionTitle.BackgroundTransparency = 1
+    sectionTitle.Position = UDim2.new(0, 12, 0, 6)
+    sectionTitle.Size = UDim2.new(1, -24, 0, 22)
+    sectionTitle.Text = "إظهار / إخفاء الأقسام"
+    sectionTitle.TextColor3 = Color3.fromRGB(220, 236, 255)
+    sectionTitle.TextSize = 12
+    sectionTitle.Font = Enum.Font.GothamBold
+    sectionTitle.TextXAlignment = Enum.TextXAlignment.Left
+    sectionTitle.Parent = sectionPanel
+    local sectionButtons = Instance.new("Frame")
+    sectionButtons.Name = "Buttons"
+    sectionButtons.Position = UDim2.new(0, 8, 0, 34)
+    sectionButtons.Size = UDim2.new(1, -16, 1, -40)
+    sectionButtons.BackgroundTransparency = 1
+    sectionButtons.Parent = sectionPanel
+    local sectionGrid = Instance.new("UIGridLayout")
+    sectionGrid.CellSize = UDim2.new(0.5, -4, 0, 30)
+    sectionGrid.CellPadding = UDim2.fromOffset(8, 6)
+    sectionGrid.SortOrder = Enum.SortOrder.LayoutOrder
+    sectionGrid.Parent = sectionButtons
+    local sectionDefs = {
+        {tab = TabHome, page = HomePage, name = "الرئيسية"},
+        {tab = TabFav, page = FavoritesPage, name = "المفضلة"},
+        {tab = Tab1, page = ScriptsPage, name = "السكربتات"},
+        {tab = Tab2, page = FixesPage, name = "التعديلات"},
+        {tab = Tab3, page = ThemePage, name = "المظهر"},
+    }
+    for i, def in ipairs(sectionDefs) do
+        local toggle = Instance.new("TextButton")
+        toggle.Name = "V14ToggleSection" .. i
+        toggle.LayoutOrder = i
+        toggle.Size = UDim2.new(0.5, -8, 0, 30)
+        toggle.BackgroundColor3 = Color3.fromRGB(18, 40, 62)
+        toggle.BorderSizePixel = 0
+        toggle.TextColor3 = Color3.fromRGB(220, 236, 255)
+        toggle.TextSize = 10
+        toggle.Font = Enum.Font.GothamSemibold
+        toggle.Parent = sectionButtons
+        RoundUI(toggle, 8)
+        local function RefreshToggleText()
+            toggle.Text = (def.tab.Visible and "●  " or "○  ") .. def.name
+        end
+        RefreshToggleText()
+        toggle.MouseButton1Click:Connect(function()
+            local nextVisible = not def.tab.Visible
+            if not nextVisible and def.page.Visible then
+                local fallbackTab = TabHome.Visible and TabHome or Tab5
+                local fallbackPage = fallbackTab == TabHome and HomePage or SettingsPage
+                fallbackPage.Visible = true
+                for _, p in ipairs(Pages) do if p ~= fallbackPage then p.Visible = false end end
+                for _, t in ipairs(Tabs) do
+                    t:SetAttribute("DEVIL_Active", t == fallbackTab)
+                    t.BackgroundColor3 = t == fallbackTab and Color3.fromRGB(25, 66, 92) or Color3.fromRGB(14, 29, 47)
+                    t.TextColor3 = t == fallbackTab and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(172, 194, 220)
+                end
+            end
+            def.tab.Visible = nextVisible
+            if not nextVisible then def.page.Visible = false end
+            RefreshToggleText()
+        end)
+    end
+
+    -- Search shortcut, clear shortcut, and fast jump to the first matching page.
+    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        local query = string.lower(SearchBox.Text or "")
+        if query == "" then return end
+        for _, item in ipairs(AllCards) do
+            local haystack = string.lower(tostring(item.Title or "") .. " " .. tostring(item.Desc or ""))
+            if string.find(haystack, query, 1, true) and item.Card and item.Card.Parent then
+                local targetPage = item.Card.Parent
+                local pageIndex = table.find(Pages, targetPage)
+                if pageIndex then
+                    for _, p in ipairs(Pages) do p.Visible = (p == targetPage) end
+                    for i, tab in ipairs(Tabs) do
+                        tab:SetAttribute("DEVIL_Active", i == pageIndex)
+                        tab.BackgroundColor3 = i == pageIndex and Color3.fromRGB(25, 66, 92) or Color3.fromRGB(14, 29, 47)
+                        tab.TextColor3 = i == pageIndex and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(172, 194, 220)
+                    end
+                    if DEVIL_EXTRA and DEVIL_EXTRA.State then DEVIL_EXTRA.State.ActiveTabIndex = pageIndex end
+                    break
+                end
+            end
+        end
+    end)
+    UserInputService.InputBegan:Connect(function(input, processed)
+        if processed then return end
+        if input.KeyCode == Enum.KeyCode.F and UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+            SearchBox:CaptureFocus()
+        elseif input.KeyCode == Enum.KeyCode.Escape then
+            if SearchBox:IsFocused() then SearchBox.Text = ""; SearchBox:ReleaseFocus() end
+        elseif input.KeyCode == Enum.KeyCode.S and UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+            SaveDesignPrefs()
+        end
+    end)
+
+    -- Default to the Home tab and keep the premium cyan/blue glass styling coherent.
+    for _, page in ipairs(Pages) do page.Visible = (page == HomePage) end
+    for _, tab in ipairs(Tabs) do
+        local active = tab == TabHome
+        tab:SetAttribute("DEVIL_Active", active)
+        tab.BackgroundColor3 = active and Color3.fromRGB(25, 66, 92) or Color3.fromRGB(14, 29, 47)
+        tab.TextColor3 = active and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(172, 194, 220)
+        local stroke = tab:FindFirstChild("V14Stroke")
+        if stroke then stroke.Transparency = active and 0.22 or 0.82 end
+    end
+    if Notify then Notify("DEVIL HUB v14 • تم ترتيب الواجهة الجانبية", CurrentAccent) end
+end, function(err)
+    warn("[MUSAED v14 UI REWORK] " .. tostring(err))
+end)
+
+
+-- ==========================================================
+-- DEVIL HUB V15 • GLASS MOTION / DEPTH / HEADER REWORK
+-- UI-only presentation patch; preserves existing feature callbacks.
+-- ==========================================================
+xpcall(function()
+    local TweenService = game:GetService("TweenService")
+    local UserInputService = game:GetService("UserInputService")
+
+    local C = {
+        Base = Color3.fromRGB(7, 16, 29),
+        Panel = Color3.fromRGB(12, 27, 45),
+        PanelHover = Color3.fromRGB(20, 48, 70),
+        Cyan = Color3.fromRGB(76, 211, 255),
+        Blue = Color3.fromRGB(30, 116, 190),
+        Text = Color3.fromRGB(230, 242, 255),
+        Muted = Color3.fromRGB(150, 176, 204),
+    }
+    local function DevilRound(obj, radius)
+        if not obj or not obj:IsA("GuiObject") then return end
+        local c = obj:FindFirstChild("DevilV15Corner")
+        if not c then c = Instance.new("UICorner"); c.Name = "DevilV15Corner"; c.Parent = obj end
+        c.CornerRadius = UDim.new(0, radius or 9)
+    end
+    local function DevilStroke(obj, color, transparency, thickness)
+        if not obj or not obj:IsA("GuiObject") then return end
+        local s = obj:FindFirstChild("DevilV15Stroke")
+        if not s then s = Instance.new("UIStroke"); s.Name = "DevilV15Stroke"; s.Parent = obj end
+        s.Color = color or C.Cyan
+        s.Transparency = transparency or 0.6
+        s.Thickness = thickness or 1
+        s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    end
+    local function DevilGradient(obj, c1, c2, rotation)
+        if not obj or not obj:IsA("GuiObject") then return end
+        local g = obj:FindFirstChild("DevilV15Gradient")
+        if not g then g = Instance.new("UIGradient"); g.Name = "DevilV15Gradient"; g.Parent = obj end
+        g.Color = ColorSequence.new(c1 or C.Panel, c2 or C.Base)
+        g.Rotation = rotation or 25
+    end
+    local function DevilTween(obj, info, props)
+        if not obj or not obj.Parent then return end
+        pcall(function() TweenService:Create(obj, info, props):Play() end)
+    end
+
+    -- Branding: use typography and geometric shapes rather than emoji labels.
+    if Title and Title.Parent then
+        Title.Text = "DEVIL HUB  /  " .. tostring(HUB_VERSION or "PREMIUM")
+        Title.Font = Enum.Font.GothamBlack
+        Title.TextColor3 = C.Text
+        Title.TextSize = 15
+    end
+    if Header and Header.Parent then
+        Header.BackgroundColor3 = C.Base
+        Header.BackgroundTransparency = 0.04
+        DevilGradient(Header, Color3.fromRGB(12, 29, 49), Color3.fromRGB(5, 13, 25), 0)
+        DevilRound(Header, 15)
+    end
+
+    -- Keep six destinations max and remove icon glyphs from navigation labels.
+    local cleanLabels = {
+        [TabHome] = "الرئيسية",
+        [TabFav] = "المفضلة",
+        [Tab1] = "السكربتات",
+        [Tab2] = "التعديلات",
+        [Tab3] = "المظهر",
+        [Tab5] = "الإعدادات",
+    }
+    local tabBar = MainFrame:FindFirstChild("DEVIL_TabBar")
+    if tabBar then
+        tabBar.Position = UDim2.new(0, 14, 0, 72)
+        tabBar.Size = UDim2.new(0, 164, 1, -88)
+        tabBar.BackgroundColor3 = C.Panel
+        tabBar.BackgroundTransparency = 0.08
+        tabBar.ScrollBarThickness = 2
+        DevilRound(tabBar, 13)
+        DevilStroke(tabBar, C.Blue, 0.5, 1)
+        DevilGradient(tabBar, Color3.fromRGB(13, 34, 54), Color3.fromRGB(7, 16, 29), 90)
+    end
+    if SidebarList then
+        SidebarList.FillDirection = Enum.FillDirection.Vertical
+        SidebarList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+        SidebarList.VerticalAlignment = Enum.VerticalAlignment.Top
+        SidebarList.SortOrder = Enum.SortOrder.LayoutOrder
+        SidebarList.Padding = UDim.new(0, 7)
+    end
+    local tabCount = 0
+    for _, tab in ipairs(Tabs or {}) do
+        if tab and tab.Parent then
+            local label = cleanLabels[tab]
+            if label then tab.Text = label end
+            tab.Visible = label ~= nil
+            if label then
+                tabCount += 1
+                tab.LayoutOrder = tabCount
+                tab.Size = UDim2.new(1, -4, 0, 40)
+                tab.TextXAlignment = Enum.TextXAlignment.Left
+                tab.TextSize = 12
+                tab.Font = Enum.Font.GothamSemibold
+                tab.TextColor3 = C.Muted
+                tab.BackgroundColor3 = C.Panel
+                tab.BackgroundTransparency = 0.12
+                tab.AutoButtonColor = false
+                DevilRound(tab, 9)
+                DevilStroke(tab, C.Blue, 0.72, 1)
+                DevilGradient(tab, Color3.fromRGB(17, 38, 59), Color3.fromRGB(10, 23, 39), 0)
+                local pad = tab:FindFirstChildOfClass("UIPadding")
+                if not pad then pad = Instance.new("UIPadding"); pad.Parent = tab end
+                pad.PaddingLeft = UDim.new(0, 13)
+                pad.PaddingRight = UDim.new(0, 6)
+
+                -- Tiny geometric active marker: no emoji/icon dependency.
+                local marker = tab:FindFirstChild("DevilV15Marker")
+                if not marker then
+                    marker = Instance.new("Frame")
+                    marker.Name = "DevilV15Marker"
+                    marker.BorderSizePixel = 0
+                    marker.Size = UDim2.new(0, 3, 1, -14)
+                    marker.Position = UDim2.new(0, 3, 0, 7)
+                    marker.BackgroundColor3 = C.Cyan
+                    marker.Parent = tab
+                    DevilRound(marker, 3)
+                end
+                local function isActive()
+                    return tab:GetAttribute("DEVIL_Active") == true
+                end
+                local function paint(active, hovered)
+                    DevilTween(tab, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                        BackgroundColor3 = active and Color3.fromRGB(20, 64, 91) or (hovered and C.PanelHover or C.Panel),
+                        BackgroundTransparency = active and 0.02 or 0.12,
+                    })
+                    local stroke = tab:FindFirstChild("DevilV15Stroke")
+                    if stroke then
+                        DevilTween(stroke, TweenInfo.new(0.16), {Transparency = active and 0.18 or (hovered and 0.42 or 0.72)})
+                    end
+                    marker.Visible = active
+                    tab.TextColor3 = active and C.Text or (hovered and Color3.fromRGB(210, 235, 255) or C.Muted)
+                end
+                tab.MouseEnter:Connect(function() paint(isActive(), true) end)
+                tab.MouseLeave:Connect(function() paint(isActive(), false) end)
+                tab.MouseButton1Down:Connect(function()
+                    DevilTween(tab, TweenInfo.new(0.08), {Size = UDim2.new(1, -8, 0, 38)})
+                end)
+                tab.MouseButton1Up:Connect(function()
+                    DevilTween(tab, TweenInfo.new(0.12, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(1, -4, 0, 40)})
+                end)
+                paint(isActive(), false)
+            end
+        end
+    end
+
+    -- Reflow content to preserve breathing room beside the sidebar.
+    if PageContainer then
+        PageContainer.Position = UDim2.new(0, 190, 0, 72)
+        PageContainer.Size = UDim2.new(1, -204, 1, -88)
+        PageContainer.ClipsDescendants = true
+    end
+    for _, page in ipairs(Pages or {}) do
+        if page and page.Parent then
+            page.Position = UDim2.new(0, 0, 0, 0)
+            page.Size = UDim2.new(1, 0, 1, 0)
+            page.ScrollBarThickness = 3
+            page.ScrollBarImageColor3 = C.Cyan
+            page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+            page.CanvasSize = UDim2.new(0, 0, 0, 0)
+            page.BackgroundTransparency = 1
+        end
+    end
+
+    -- Header controls: title left; profile/dashboard/panic grouped; search, notifications and close right.
+    -- Hide the older duplicate controls that were placed over the content area.
+    for _, child in ipairs(MainFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            local t = string.lower(tostring(child.Text or ""))
+            if t == "profiles" or t == "panic" then
+                child.Parent = Header
+                child.Visible = true
+            end
+        end
+    end
+    if Title then
+        Title.Position = UDim2.new(0, 18, 0, 0)
+        Title.Size = UDim2.new(0, 190, 1, 0)
+        Title.TextXAlignment = Enum.TextXAlignment.Left
+    end
+    if StatusPill then
+        StatusPill.Position = UDim2.new(0, 205, 0.5, -11)
+        StatusPill.Size = UDim2.fromOffset(74, 22)
+    end
+    if Header then
+        local headerButtons = {}
+        for _, obj in ipairs(Header:GetChildren()) do
+            if obj:IsA("TextButton") then
+                local t = string.lower(tostring(obj.Text or ""))
+                if t == "dashboard" then
+                    obj.Text = "لوحة التحكم"
+                    table.insert(headerButtons, {obj = obj, width = 88, order = 1})
+                elseif t == "profiles" then
+                    obj.Text = "البروفايلات"
+                    table.insert(headerButtons, {obj = obj, width = 82, order = 2})
+                elseif t == "panic" then
+                    obj.Text = "إيقاف"
+                    table.insert(headerButtons, {obj = obj, width = 54, order = 3})
+                end
+            end
+        end
+        -- Keep these action buttons grouped before the search field.
+        local rightEdge = -540
+        for _, info in ipairs(headerButtons) do
+            local obj = info.obj
+            obj.Visible = true
+            obj.AnchorPoint = Vector2.new(0, 0.5)
+            obj.Position = UDim2.new(1, rightEdge, 0.5, 0)
+            obj.Size = UDim2.fromOffset(info.width, 30)
+            obj.TextSize = 10
+            obj.Font = Enum.Font.GothamBold
+            obj.TextColor3 = C.Text
+            obj.BackgroundColor3 = info.order == 3 and Color3.fromRGB(91, 37, 48) or C.Panel
+            obj.BackgroundTransparency = 0.08
+            obj.AutoButtonColor = false
+            DevilRound(obj, 8)
+            DevilStroke(obj, info.order == 3 and Color3.fromRGB(255, 110, 130) or C.Blue, 0.4, 1)
+            DevilGradient(obj, info.order == 3 and Color3.fromRGB(91, 37, 48) or Color3.fromRGB(25, 63, 89), C.Base, 90)
+            obj.MouseEnter:Connect(function()
+                DevilTween(obj, TweenInfo.new(0.12), {BackgroundTransparency = 0, Size = UDim2.fromOffset(info.width, 32)})
+            end)
+            obj.MouseLeave:Connect(function()
+                DevilTween(obj, TweenInfo.new(0.12), {BackgroundTransparency = 0.08, Size = UDim2.fromOffset(info.width, 30)})
+            end)
+            rightEdge += info.width + 7
+        end
+    end
+    if SearchBox then
+        SearchBox.Position = UDim2.new(1, -250, 0.5, -16)
+        SearchBox.Size = UDim2.fromOffset(172, 32)
+        SearchBox.PlaceholderText = "بحث...  Ctrl+F"
+        SearchBox.TextSize = 11
+        SearchBox.BackgroundColor3 = Color3.fromRGB(8, 21, 36)
+        SearchBox.TextColor3 = C.Text
+        SearchBox.PlaceholderColor3 = C.Muted
+        SearchBox.BackgroundTransparency = 0.05
+        DevilRound(SearchBox, 9)
+        DevilStroke(SearchBox, C.Blue, 0.45, 1)
+    end
+    if NotificationBell then
+        NotificationBell.Position = UDim2.new(1, -292, 0.5, -16)
+        NotificationBell.Size = UDim2.fromOffset(32, 32)
+        NotificationBell.Text = "!"
+        NotificationBell.TextSize = 14
+        NotificationBell.Font = Enum.Font.GothamBlack
+        NotificationBell.BackgroundColor3 = C.Panel
+        NotificationBell.TextColor3 = C.Cyan
+        DevilRound(NotificationBell, 9)
+        DevilStroke(NotificationBell, C.Blue, 0.45, 1)
+    end
+    if CloseBtn then
+        CloseBtn.Position = UDim2.new(1, -34, 0.5, -16)
+        CloseBtn.Size = UDim2.fromOffset(28, 32)
+        CloseBtn.Text = "×"
+        CloseBtn.TextSize = 18
+        CloseBtn.Font = Enum.Font.GothamMedium
+        CloseBtn.TextColor3 = Color3.fromRGB(255, 185, 194)
+        CloseBtn.BackgroundColor3 = Color3.fromRGB(66, 27, 39)
+        CloseBtn.BackgroundTransparency = 0.04
+        DevilRound(CloseBtn, 8)
+        DevilStroke(CloseBtn, Color3.fromRGB(255, 110, 130), 0.35, 1)
+    end
+
+    -- 3D glass treatment for cards/buttons: layered shadow, gradient and hover lift.
+    local seen = {}
+    local function polishButton(btn)
+        if seen[btn] or not btn:IsA("TextButton") or btn == ToggleBtn then return end
+        seen[btn] = true
+        if not btn.Parent then return end
+        local basePosition = btn.Position
+        local baseSize = btn.Size
+        btn.AutoButtonColor = false
+        btn.Font = Enum.Font.GothamSemibold
+        btn.TextSize = math.clamp(btn.TextSize, 10, 13)
+        btn.TextColor3 = btn.TextColor3 or C.Text
+        DevilRound(btn, 8)
+        DevilStroke(btn, C.Blue, 0.62, 1)
+        if not btn:FindFirstChild("DevilV15Shadow") then
+            local shadow = Instance.new("Frame")
+            shadow.Name = "DevilV15Shadow"
+            shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+            shadow.Position = UDim2.new(0.5, 0, 0.5, 3)
+            shadow.Size = UDim2.new(1, 2, 1, 2)
+            shadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            shadow.BackgroundTransparency = 0.72
+            shadow.BorderSizePixel = 0
+            shadow.ZIndex = math.max(0, btn.ZIndex - 1)
+            shadow.Parent = btn
+            DevilRound(shadow, 8)
+            shadow.Active = false
+        end
+        btn.MouseEnter:Connect(function()
+            DevilTween(btn, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                BackgroundTransparency = 0,
+                Position = basePosition - UDim2.fromOffset(0, 1),
+            })
+            local stroke = btn:FindFirstChild("DevilV15Stroke")
+            if stroke then DevilTween(stroke, TweenInfo.new(0.14), {Transparency = 0.22, Thickness = 1.25}) end
+        end)
+        btn.MouseLeave:Connect(function()
+            DevilTween(btn, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Position = basePosition,
+                Size = baseSize,
+                BackgroundTransparency = 0.08,
+            })
+            local stroke = btn:FindFirstChild("DevilV15Stroke")
+            if stroke then DevilTween(stroke, TweenInfo.new(0.14), {Transparency = 0.62, Thickness = 1}) end
+        end)
+        btn.MouseButton1Down:Connect(function()
+            DevilTween(btn, TweenInfo.new(0.07), {Size = baseSize - UDim2.fromOffset(2, 2)})
+        end)
+        btn.MouseButton1Up:Connect(function()
+            DevilTween(btn, TweenInfo.new(0.12, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = baseSize})
+        end)
+    end
+    for _, obj in ipairs(MainFrame:GetDescendants()) do
+        if obj:IsA("TextButton") then polishButton(obj) end
+        if obj:IsA("Frame") and obj.Name ~= "DevilV15Shadow" and obj.Name ~= "DevilV15Marker" then
+            if obj.Name:find("Card") or obj.Name:find("card") then
+                DevilRound(obj, 11)
+                DevilStroke(obj, C.Blue, 0.72, 1)
+                DevilGradient(obj, Color3.fromRGB(14, 34, 54), Color3.fromRGB(8, 19, 33), 90)
+            end
+        end
+    end
+    MainFrame.DescendantAdded:Connect(function(obj)
+        task.defer(function()
+            if obj and obj.Parent and obj:IsA("TextButton") then polishButton(obj) end
+        end)
+    end)
+
+    -- A gentle ambient header shimmer and subtle floating motion (reduced-motion respected).
+    local glow = MainFrame:FindFirstChild("V11HeaderGlow")
+    if glow and glow:IsA("Frame") then
+        glow.BackgroundColor3 = C.Cyan
+        glow.Size = UDim2.new(1, -32, 0, 2)
+        glow.Position = UDim2.new(0, 16, 0, 59)
+        local g = glow:FindFirstChildOfClass("UIGradient")
+        if g then
+            g.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 116, 190)),
+                ColorSequenceKeypoint.new(0.5, C.Cyan),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 116, 190)),
+            })
+        end
+    end
+    local motionOn = true
+    local motionButton = nil
+    for _, obj in ipairs(SettingsPage:GetDescendants()) do
+        if obj:IsA("TextButton") and (string.find(string.lower(obj.Text), "الأنيميشن", 1, true) or string.find(string.lower(obj.Text), "animation", 1, true)) then
+            motionButton = obj
+            break
+        end
+    end
+    -- Keep motion intentionally subtle to avoid distracting movement in the UI.
+    if MainFrame and MainFrame.Parent then
+        local oldPos = MainFrame.Position
+        MainFrame.MouseEnter:Connect(function()
+            if motionOn and AnimationEnabled ~= false then
+                DevilTween(MainFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                    Position = oldPos + UDim2.fromOffset(0, -1)
+                })
+            end
+        end)
+        MainFrame.MouseLeave:Connect(function()
+            DevilTween(MainFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Position = oldPos
+            })
+        end)
+    end
+
+    -- Update branding text across onboarding and notification copy where present.
+    for _, obj in ipairs(ScreenGui:GetDescendants()) do
+        if obj:IsA("TextLabel") then
+            if string.find(obj.Text, "مرحباً بك في DEVIL HUB", 1, true) then
+                obj.Text = string.gsub(obj.Text, "DEVIL HUB", "DEVIL HUB")
+            elseif obj.Text == "V13 DESIGN: واجهة موحدة • مقاسات محسنة • رموز ثابتة" then
+                obj.Text = "DEVIL HUB • واجهة زجاجية محسنة"
+            end
+        end
+    end
+    if Notify then Notify("DEVIL HUB • تم تطبيق تصميم Glass ثلاثي الأبعاد", C.Cyan) end
+end, function(err)
+    warn("[DEVIL HUB V15 DESIGN] " .. tostring(err))
+end)
+
+
+-- ==========================================================
+-- DEVIL HUB V16 • APPEARANCE STUDIO / HEADER CONTROL REBUILD
+-- UI presentation only; keeps original feature callbacks intact.
+-- ==========================================================
+xpcall(function()
+    local TweenService = game:GetService("TweenService")
+    local HttpService = game:GetService("HttpService")
+    local V16 = {
+        Accent = Color3.fromRGB(76, 211, 255),
+        Style = "GLASS",
+        Radius = 12,
+        TabsSide = "LEFT",
+        Density = "COMFORTABLE",
+    }
+    local Palettes = {
+        {"Devil Glass", Color3.fromRGB(76, 211, 255), Color3.fromRGB(10, 28, 47), Color3.fromRGB(18, 61, 86)},
+        {"Royal Violet", Color3.fromRGB(177, 115, 255), Color3.fromRGB(24, 16, 45), Color3.fromRGB(72, 43, 116)},
+        {"Crimson", Color3.fromRGB(255, 79, 112), Color3.fromRGB(37, 13, 25), Color3.fromRGB(103, 27, 48)},
+        {"Emerald", Color3.fromRGB(64, 230, 165), Color3.fromRGB(8, 31, 27), Color3.fromRGB(18, 79, 59)},
+        {"Royal Gold", Color3.fromRGB(255, 202, 92), Color3.fromRGB(35, 27, 15), Color3.fromRGB(91, 65, 27)},
+        {"Arctic", Color3.fromRGB(147, 220, 255), Color3.fromRGB(17, 29, 42), Color3.fromRGB(44, 77, 102)},
+        {"Neon Rose", Color3.fromRGB(255, 91, 211), Color3.fromRGB(35, 13, 37), Color3.fromRGB(99, 30, 91)},
+        {"Toxic Lime", Color3.fromRGB(187, 255, 83), Color3.fromRGB(23, 31, 13), Color3.fromRGB(61, 83, 27)},
+        {"Midnight", Color3.fromRGB(180, 195, 218), Color3.fromRGB(14, 19, 29), Color3.fromRGB(39, 48, 65)},
+        {"Ocean Blue", Color3.fromRGB(67, 139, 255), Color3.fromRGB(8, 20, 42), Color3.fromRGB(20, 55, 111)},
+        {"Copper", Color3.fromRGB(255, 155, 102), Color3.fromRGB(37, 22, 16), Color3.fromRGB(104, 51, 28)},
+        {"Mint", Color3.fromRGB(105, 255, 220), Color3.fromRGB(8, 31, 32), Color3.fromRGB(22, 83, 79)},
+    }
+    local Styles = {
+        {"Glass", "GLASS"}, {"Neon Edge", "NEON"}, {"Minimal", "MINIMAL"}, {"Solid", "SOLID"},
+    }
+    local function tween(obj, props, duration)
+        if obj and obj.Parent then pcall(function() TweenService:Create(obj, TweenInfo.new(duration or 0.18, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), props):Play() end) end
+    end
+    local function corner(obj, radius)
+        if not obj or not obj:IsA("GuiObject") then return end
+        local found = false
+        for _, child in ipairs(obj:GetChildren()) do
+            if child:IsA("UICorner") then child.CornerRadius = UDim.new(0, radius); found = true end
+        end
+        if not found then local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0, radius); c.Parent = obj end
+    end
+    local function stroke(obj, color, alpha, thickness)
+        if not obj or not obj:IsA("GuiObject") then return end
+        local s = obj:FindFirstChild("DEVIL_V16_Stroke")
+        if not s then s = Instance.new("UIStroke"); s.Name = "DEVIL_V16_Stroke"; s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border; s.Parent = obj end
+        s.Color = color or V16.Accent; s.Transparency = alpha or 0.45; s.Thickness = thickness or 1
+    end
+    local function gradient(obj, top, bottom, rotation)
+        if not obj or not obj:IsA("GuiObject") then return end
+        local g = obj:FindFirstChild("DEVIL_V16_Gradient")
+        if not g then g = Instance.new("UIGradient"); g.Name = "DEVIL_V16_Gradient"; g.Parent = obj end
+        g.Color = ColorSequence.new(top, bottom); g.Rotation = rotation or 90
+    end
+    local function section(parent, name, order, height)
+        local f = Instance.new("Frame")
+        f.Name = name; f.LayoutOrder = order; f.Size = UDim2.new(1, -8, 0, height); f.BackgroundColor3 = Color3.fromRGB(10, 22, 37)
+        f.BackgroundTransparency = 0.08; f.BorderSizePixel = 0; f.Parent = parent; corner(f, 14); stroke(f, V16.Accent, 0.65, 1)
+        local title = Instance.new("TextLabel")
+        title.Name = "SectionTitle"; title.Position = UDim2.new(0, 14, 0, 8); title.Size = UDim2.new(1, -28, 0, 24)
+        title.BackgroundTransparency = 1; title.Text = name; title.TextColor3 = Color3.fromRGB(229, 241, 255); title.TextSize = 13
+        title.Font = Enum.Font.GothamBold; title.TextXAlignment = Enum.TextXAlignment.Left; title.Parent = f
+        return f
+    end
+    local function makeButton(parent, name, textValue, pos, size)
+        local b = Instance.new("TextButton")
+        b.Name = name; b.Text = textValue; b.Position = pos; b.Size = size; b.BackgroundColor3 = Color3.fromRGB(17, 38, 59)
+        b.BackgroundTransparency = 0.08; b.BorderSizePixel = 0; b.TextColor3 = Color3.fromRGB(224, 239, 255)
+        b.TextSize = 11; b.Font = Enum.Font.GothamSemibold; b.AutoButtonColor = false; b.Parent = parent
+        corner(b, V16.Radius); stroke(b, V16.Accent, 0.58, 1); gradient(b, Color3.fromRGB(25, 58, 83), Color3.fromRGB(9, 21, 36), 90)
+        local base = size
+        b.MouseEnter:Connect(function() tween(b, {BackgroundTransparency = 0, Size = UDim2.new(base.X.Scale, base.X.Offset, base.Y.Scale, base.Y.Offset + 2)}); local s = b:FindFirstChild("DEVIL_V16_Stroke"); if s then tween(s, {Transparency = 0.15}) end end)
+        b.MouseLeave:Connect(function() tween(b, {BackgroundTransparency = 0.08, Size = base}); local s = b:FindFirstChild("DEVIL_V16_Stroke"); if s then tween(s, {Transparency = 0.58}) end end)
+        return b
+    end
+    local function notifyV16(msg)
+        if type(Notify) == "function" then pcall(Notify, msg, V16.Accent) end
+    end
+
+    -- Rebuild the appearance tab as a small theme studio; all choices are in this one tab.
+    if ThemePage and ThemePage.Parent then
+        local legacyThemeGrid = ThemePage:FindFirstChild("DEVIL_ThemeGrid")
+        if legacyThemeGrid then legacyThemeGrid.Visible = false; legacyThemeGrid.Size = UDim2.new(1, 0, 0, 0) end
+        local old = ThemePage:FindFirstChild("DEVIL_V16_AppearanceStudio")
+        if old then old:Destroy() end
+        local studio = Instance.new("Frame")
+        studio.Name = "DEVIL_V16_AppearanceStudio"; studio.LayoutOrder = -50; studio.Size = UDim2.new(1, -6, 0, 0)
+        studio.AutomaticSize = Enum.AutomaticSize.Y; studio.BackgroundTransparency = 1; studio.Parent = ThemePage
+        local flow = Instance.new("UIListLayout"); flow.SortOrder = Enum.SortOrder.LayoutOrder; flow.Padding = UDim.new(0, 10); flow.Parent = studio
+
+        local hero = section(studio, "DEVIL HUB  /  APPEARANCE STUDIO", 1, 62)
+        local hint = Instance.new("TextLabel"); hint.Position = UDim2.new(0, 14, 0, 32); hint.Size = UDim2.new(1, -28, 0, 20)
+        hint.BackgroundTransparency = 1; hint.Text = "اختَر ثيمك وشكل الواجهة ومكان التابات — التغيير مباشر"; hint.TextColor3 = Color3.fromRGB(151, 181, 211)
+        hint.TextSize = 11; hint.Font = Enum.Font.Gotham; hint.TextXAlignment = Enum.TextXAlignment.Left; hint.Parent = hero
+
+        local paletteSection = section(studio, "01  /  COLOR SYSTEMS", 2, 0)
+        paletteSection.AutomaticSize = Enum.AutomaticSize.Y; paletteSection.Size = UDim2.new(1, -8, 0, 0)
+        local gridWrap = Instance.new("Frame"); gridWrap.Position = UDim2.new(0, 12, 0, 38); gridWrap.Size = UDim2.new(1, -24, 0, 0)
+        gridWrap.AutomaticSize = Enum.AutomaticSize.Y; gridWrap.BackgroundTransparency = 1; gridWrap.Parent = paletteSection
+        local grid = Instance.new("UIGridLayout"); grid.CellSize = UDim2.new(0, 136, 0, 62); grid.CellPadding = UDim2.new(0, 8, 0, 8); grid.SortOrder = Enum.SortOrder.LayoutOrder; grid.Parent = gridWrap
+        for i, p in ipairs(Palettes) do
+            local b = makeButton(gridWrap, "Palette_" .. i, "", UDim2.new(), UDim2.fromOffset(136, 62)); b.LayoutOrder = i
+            b.BackgroundColor3 = p[3]; gradient(b, p[4], p[3], 20); stroke(b, p[2], 0.2, 1.4)
+            local swatch = Instance.new("Frame"); swatch.Position = UDim2.new(0, 9, 0, 9); swatch.Size = UDim2.new(0, 18, 0, 42); swatch.BackgroundColor3 = p[2]; swatch.BorderSizePixel = 0; swatch.Parent = b; corner(swatch, 6)
+            local nm = Instance.new("TextLabel"); nm.Position = UDim2.new(0, 34, 0, 0); nm.Size = UDim2.new(1, -40, 1, 0); nm.BackgroundTransparency = 1; nm.Text = p[1]; nm.TextColor3 = Color3.fromRGB(239, 246, 255); nm.TextSize = 10; nm.Font = Enum.Font.GothamBold; nm.TextWrapped = true; nm.Parent = b
+            b.MouseButton1Click:Connect(function()
+                V16.Accent = p[2]
+                if type(UpdateTheme) == "function" then pcall(UpdateTheme, p[2]) end
+                notifyV16("تم تطبيق ثيم " .. p[1])
+                for _, sib in ipairs(gridWrap:GetChildren()) do if sib:IsA("TextButton") then local st = sib:FindFirstChild("DEVIL_V16_Stroke"); if st then st.Transparency = sib == b and 0.02 or 0.48; st.Thickness = sib == b and 2 or 1 end end end
+                -- Repaint the active tab, header, and action controls immediately.
+                for _, tab in ipairs(Tabs or {}) do if tab and tab.Parent then stroke(tab, p[2], tab:GetAttribute("DEVIL_Active") and 0.15 or 0.65, 1); local mark = tab:FindFirstChild("DevilV15Marker"); if mark then mark.BackgroundColor3 = p[2] end end end
+                if Header then stroke(Header, p[2], 0.45, 1); gradient(Header, p[4], p[3], 0) end
+                for _, obj in ipairs(MainFrame:GetDescendants()) do
+                    if obj:IsA("TextButton") and obj.Name ~= "CloseBtn" and obj.Name ~= "NotificationBell" and not string.find(string.lower(obj.Text or ""), "إيقاف", 1, true) then
+                        local st = obj:FindFirstChild("DEVIL_V16_Stroke"); if st then st.Color = p[2] end
+                    end
+                end
+            end)
+        end
+        local paletteLayout = gridWrap:FindFirstChildOfClass("UIGridLayout")
+        local function updatePaletteHeight()
+            if paletteLayout then
+                local cols = math.max(1, math.floor((gridWrap.AbsoluteSize.X + 8) / 144))
+                local rows = math.ceil(#Palettes / cols)
+                gridWrap.Size = UDim2.new(1, -24, 0, rows * 70)
+                paletteSection.Size = UDim2.new(1, -8, 0, 48 + rows * 70)
+            end
+        end
+        updatePaletteHeight()
+        gridWrap:GetPropertyChangedSignal("AbsoluteSize"):Connect(updatePaletteHeight)
+
+        local styleSection = section(studio, "02  /  VISUAL STYLE", 3, 86)
+        for i, s in ipairs(Styles) do
+            local b = makeButton(styleSection, "Style_" .. s[2], s[1], UDim2.new(0, 12 + (i - 1) * 118, 0, 42), UDim2.fromOffset(108, 30))
+            b.MouseButton1Click:Connect(function()
+                V16.Style = s[2]
+                for _, sibling in ipairs(styleSection:GetChildren()) do if sibling:IsA("TextButton") then local st = sibling:FindFirstChild("DEVIL_V16_Stroke"); if st then st.Transparency = sibling == b and 0.08 or 0.58 end end end
+                for _, obj in ipairs(MainFrame:GetDescendants()) do
+                    if obj:IsA("GuiObject") and (obj:IsA("TextButton") or obj:IsA("Frame") or obj:IsA("TextBox")) then
+                        if s[2] == "NEON" then corner(obj, V16.Radius); stroke(obj, V16.Accent, 0.12, 1.25)
+                        elseif s[2] == "MINIMAL" then corner(obj, 5); stroke(obj, V16.Accent, 0.82, 1); if obj:IsA("GuiObject") and obj:IsA("TextButton") then obj.BackgroundTransparency = 0.18 end
+                        elseif s[2] == "SOLID" then corner(obj, V16.Radius); stroke(obj, V16.Accent, 0.25, 1); if obj:IsA("TextButton") then obj.BackgroundTransparency = 0 end
+                        else corner(obj, V16.Radius); stroke(obj, V16.Accent, 0.48, 1); if obj:IsA("TextButton") then obj.BackgroundTransparency = 0.08 end end
+                    end
+                end
+                notifyV16("نمط الواجهة: " .. s[1])
+            end)
+        end
+
+        local layoutSection = section(studio, "03  /  NAVIGATION & SHAPE", 4, 124)
+        local left = makeButton(layoutSection, "TabsLeft", "التابات يسار", UDim2.new(0, 12, 0, 40), UDim2.fromOffset(112, 30))
+        local right = makeButton(layoutSection, "TabsRight", "التابات يمين", UDim2.new(0, 132, 0, 40), UDim2.fromOffset(112, 30))
+        left.MouseButton1Click:Connect(function()
+            V16.TabsSide = "LEFT"
+            local bar = MainFrame:FindFirstChild("DEVIL_TabBar")
+            if bar then bar.Position = UDim2.new(0, 14, 0, 72) end
+            if PageContainer then PageContainer.Position = UDim2.new(0, 190, 0, 72); PageContainer.Size = UDim2.new(1, -204, 1, -88) end
+            left.BackgroundColor3 = Color3.fromRGB(24, 70, 96); right.BackgroundColor3 = Color3.fromRGB(17, 38, 59)
+            notifyV16("مكان التابات: اليسار")
+        end)
+        right.MouseButton1Click:Connect(function()
+            V16.TabsSide = "RIGHT"
+            local bar = MainFrame:FindFirstChild("DEVIL_TabBar")
+            if bar then bar.Position = UDim2.new(1, -178, 0, 72) end
+            if PageContainer then PageContainer.Position = UDim2.new(0, 14, 0, 72); PageContainer.Size = UDim2.new(1, -204, 1, -88) end
+            left.BackgroundColor3 = Color3.fromRGB(17, 38, 59); right.BackgroundColor3 = Color3.fromRGB(24, 70, 96)
+            notifyV16("مكان التابات: اليمين")
+        end)
+        local shapeLabel = Instance.new("TextLabel"); shapeLabel.Position = UDim2.new(0, 260, 0, 43); shapeLabel.Size = UDim2.new(0, 95, 0, 24); shapeLabel.BackgroundTransparency = 1
+        shapeLabel.Text = "استدارة الحواف"; shapeLabel.TextColor3 = Color3.fromRGB(177, 199, 222); shapeLabel.TextSize = 10; shapeLabel.Font = Enum.Font.Gotham; shapeLabel.Parent = layoutSection
+        local shapeValues = {{"حاد", 5}, {"متوازن", 12}, {"ناعم", 19}}
+        for i, v in ipairs(shapeValues) do
+            local b = makeButton(layoutSection, "Radius_" .. v[2], v[1], UDim2.new(0, 260 + (i - 1) * 76, 0, 75), UDim2.fromOffset(68, 28))
+            b.MouseButton1Click:Connect(function()
+                V16.Radius = v[2]
+                for _, obj in ipairs(MainFrame:GetDescendants()) do if obj:IsA("GuiObject") then corner(obj, v[2]) end end
+                notifyV16("تم تغيير شكل الحواف")
+            end)
+        end
+
+        local densitySection = section(studio, "04  /  SPACING", 5, 82)
+        local comfortable = makeButton(densitySection, "DensityComfortable", "مسافات مريحة", UDim2.new(0, 12, 0, 40), UDim2.fromOffset(125, 30))
+        local compact = makeButton(densitySection, "DensityCompact", "وضع مضغوط", UDim2.new(0, 146, 0, 40), UDim2.fromOffset(125, 30))
+        local function setDensity(isCompact)
+            V16.Density = isCompact and "COMPACT" or "COMFORTABLE"
+            local bar = MainFrame:FindFirstChild("DEVIL_TabBar")
+            if bar then
+                for _, tab in ipairs(Tabs or {}) do if tab and tab.Parent and tab.Visible then tab.Size = UDim2.new(1, -4, 0, isCompact and 32 or 40); tab.TextSize = isCompact and 11 or 12 end end
+                if SidebarList then SidebarList.Padding = UDim.new(0, isCompact and 4 or 7) end
+            end
+            comfortable.BackgroundColor3 = isCompact and Color3.fromRGB(17, 38, 59) or Color3.fromRGB(24, 70, 96)
+            compact.BackgroundColor3 = isCompact and Color3.fromRGB(24, 70, 96) or Color3.fromRGB(17, 38, 59)
+            notifyV16(isCompact and "تم تفعيل المسافات المضغوطة" or "تم تفعيل المسافات المريحة")
+        end
+        comfortable.MouseButton1Click:Connect(function() setDensity(false) end)
+        compact.MouseButton1Click:Connect(function() setDensity(true) end)
+
+        local resetSection = section(studio, "05  /  QUICK ACTIONS", 6, 80)
+        local reset = makeButton(resetSection, "ResetAppearance", "استرجاع التصميم الافتراضي", UDim2.new(0, 12, 0, 40), UDim2.new(1, -24, 0, 28))
+        reset.MouseButton1Click:Connect(function()
+            V16.Accent = Palettes[1][2]; V16.Style = "GLASS"; V16.Radius = 12; V16.TabsSide = "LEFT"
+            if type(UpdateTheme) == "function" then pcall(UpdateTheme, V16.Accent) end
+            local bar = MainFrame:FindFirstChild("DEVIL_TabBar"); if bar then bar.Position = UDim2.new(0, 14, 0, 72) end
+            if PageContainer then PageContainer.Position = UDim2.new(0, 190, 0, 72); PageContainer.Size = UDim2.new(1, -204, 1, -88) end
+            for _, obj in ipairs(MainFrame:GetDescendants()) do if obj:IsA("GuiObject") then corner(obj, 12) end end
+            if Header then gradient(Header, Color3.fromRGB(12, 29, 49), Color3.fromRGB(5, 13, 25), 0) end
+            setDensity(false); notifyV16("تم استرجاع تصميم DEVIL HUB")
+        end)
+    end
+
+    -- Precisely reflow header controls and give them distinct, consistent visual hierarchy.
+    if Header and Header.Parent then
+        local controls = {}
+        for _, obj in ipairs(Header:GetChildren()) do
+            if obj:IsA("TextButton") then
+                local label = string.lower(tostring(obj.Text or ""))
+                if label == "لوحة التحكم" or label == "dashboard" then controls.dashboard = obj
+                elseif label == "البروفايلات" or label == "profiles" then controls.profiles = obj
+                elseif label == "إيقاف" or label == "panic" then controls.panic = obj end
+            end
+        end
+        local function styleTopButton(obj, label, accent, bg)
+            if not obj then return end
+            obj.Text = label; obj.AnchorPoint = Vector2.new(0, 0.5); obj.Size = UDim2.fromOffset(label == "إيقاف" and 62 or 82, 30)
+            obj.TextSize = 10; obj.Font = Enum.Font.GothamBold; obj.TextColor3 = Color3.fromRGB(236, 246, 255)
+            obj.BackgroundColor3 = bg; obj.BackgroundTransparency = 0.03; obj.AutoButtonColor = false
+            corner(obj, 9); stroke(obj, accent, 0.25, 1); gradient(obj, bg:Lerp(accent, 0.24), bg, 90)
+            obj.MouseEnter:Connect(function() tween(obj, {BackgroundTransparency = 0, Size = UDim2.fromOffset(label == "إيقاف" and 62 or 82, 32)}) end)
+            obj.MouseLeave:Connect(function() tween(obj, {BackgroundTransparency = 0.03, Size = UDim2.fromOffset(label == "إيقاف" and 62 or 82, 30)}) end)
+        end
+        styleTopButton(controls.dashboard, "لوحة التحكم", V16.Accent, Color3.fromRGB(17, 49, 72))
+        styleTopButton(controls.profiles, "البروفايلات", V16.Accent, Color3.fromRGB(17, 40, 61))
+        styleTopButton(controls.panic, "إيقاف", Color3.fromRGB(255, 110, 130), Color3.fromRGB(76, 27, 43))
+        local function layoutHeader()
+            local width = Header.AbsoluteSize.X
+            local compactHeader = width < 790
+            local x = 278
+            local gap = 6
+            for _, key in ipairs({"dashboard", "profiles", "panic"}) do
+                local obj = controls[key]
+                if obj then
+                    if compactHeader and key == "dashboard" then obj.Text = "لوحة"; obj.Size = UDim2.fromOffset(54, 28)
+                    elseif compactHeader and key == "profiles" then obj.Text = "ملفات"; obj.Size = UDim2.fromOffset(50, 28)
+                    elseif compactHeader and key == "panic" then obj.Size = UDim2.fromOffset(48, 28)
+                    else obj.Text = key == "dashboard" and "لوحة التحكم" or (key == "profiles" and "البروفايلات" or "إيقاف"); obj.Size = UDim2.fromOffset(key == "panic" and 62 or 82, 30) end
+                    obj.Position = UDim2.new(0, x, 0.5, 0); obj.Visible = true; x += obj.Size.X.Offset + gap
+                end
+            end
+            local searchWidth = compactHeader and 112 or 172
+            if SearchBox then SearchBox.AnchorPoint = Vector2.new(1, 0.5); SearchBox.Size = UDim2.fromOffset(searchWidth, 30); SearchBox.Position = UDim2.new(1, compactHeader and -106 or -106, 0.5, 0) end
+            if NotificationBell then NotificationBell.AnchorPoint = Vector2.new(1, 0.5); NotificationBell.Position = UDim2.new(1, -70, 0.5, 0); NotificationBell.Size = UDim2.fromOffset(28, 30) end
+            if CloseBtn then CloseBtn.AnchorPoint = Vector2.new(1, 0.5); CloseBtn.Position = UDim2.new(1, -30, 0.5, 0); CloseBtn.Size = UDim2.fromOffset(26, 30) end
+            if StatusPill and compactHeader then StatusPill.Visible = false elseif StatusPill then StatusPill.Visible = true end
+        end
+        layoutHeader()
+        Header:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutHeader)
+    end
+
+    notifyV16("DEVIL HUB V16 • استوديو المظهر جاهز")
+end, function(err)
+    warn("[DEVIL HUB V16 APPEARANCE] " .. tostring(err))
+end)
